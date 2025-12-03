@@ -66,16 +66,22 @@ export default function MovieDetail() {
         
         {/* Movie Poster */}
         <div className="mb-6">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img 
-            src={String(movie.poster_path || "/placeholder.png")} 
-            alt={String(movie.title)}
-            className="w-full max-w-md mx-auto rounded-lg"
-            onError={(e) => {
-              // Fallback if image fails to load
-              e.currentTarget.src = "/placeholder.png";
-            }}
-          />
+          {movie.poster_path ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img 
+              src={String(movie.poster_path)} 
+              alt={String(movie.title)}
+              className="w-full max-w-md mx-auto rounded-lg"
+              onError={(e) => {
+                // Hide image on error to prevent infinite loop
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : (
+            <div className="w-full max-w-md mx-auto rounded-lg bg-gradient-to-br from-gray-800 to-gray-900 aspect-[2/3] flex items-center justify-center">
+              <span className="text-gray-500 text-center px-4">No Image Available</span>
+            </div>
+          )}
         </div>
         
         {/* Render post_content as HTML */}
