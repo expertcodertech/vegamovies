@@ -1,9 +1,9 @@
 "use client";
 
-import { useMovies } from "./context/MovieContext";
 import MovieCard from "./components/MovieCard";
 import Pagination from "./components/Pagination";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import type { Movie } from "./context/MovieContext";
 
 const primaryFilters = [
   { id: "desi-junction", label: "Desi Junction +", color: "bg-red-600" },
@@ -25,11 +25,52 @@ const secondaryFilters = [
 ];
 
 export default function Home() {
-  const { movies, loading, error } = useMovies();
-  const [searchQuery] = useState("");
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const moviesPerPage = 24;
+
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/movies?page=${currentPage}&limit=${moviesPerPage}`);
+        
+        if (!res.ok) {
+          throw new Error("Failed to fetch movies");
+        }
+
+        const data = await res.json();
+        const moviesArray = data.movies || [];
+        
+        const normalized: Movie[] = moviesArray.map((r: Record<string, unknown>) => {
+          const posterPath = (r.poster_path || r.guid || r.poster || null) as string | null;
+          return {
+            id: (r.id || r.ID) as number,
+            title: (r.title || r.post_title || "Untitled Movie") as string,
+            poster_path: posterPath,
+            post_date: r.post_date as string,
+            post_title: (r.post_title || r.title) as string,
+            release_date: (r.release_date || r.post_date || "") as string,
+            overview: r.overview as string,
+            post_content: (r.post_content || "") as string,
+          };
+        });
+
+        setMovies(normalized);
+        setTotalPages(data.pagination?.totalPages || 1);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Error fetching movies");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMovies();
+  }, [currentPage, moviesPerPage]);
 
   const toggleFilter = (filterId: string) => {
     setSelectedFilters((prev) =>
@@ -39,18 +80,6 @@ export default function Home() {
     );
     setCurrentPage(1);
   };
-
-  // Filter movies based on search
-  const filteredMovies = movies.filter(
-    (movie) =>
-      movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      movie.post_content.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredMovies.length / moviesPerPage);
-  const startIdx = (currentPage - 1) * moviesPerPage;
-  const endIdx = startIdx + moviesPerPage;
-  const currentMovies = filteredMovies.slice(startIdx, endIdx);
 
   if (loading) {
     return (
@@ -135,12 +164,12 @@ export default function Home() {
 
         {/* Movies Grid */}
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" aria-label="Movie collection">
-        {currentMovies.length === 0 ? (
+        {movies.length === 0 ? (
           <p className="text-center text-gray-400 py-8">No movies found</p>
         ) : (
           <>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-6 mb-6 sm:mb-8">
-              {currentMovies.map((movie) => (
+              {movies.map((movie) => (
                 <MovieCard key={movie.id} movie={movie} />
               ))}
             </div>

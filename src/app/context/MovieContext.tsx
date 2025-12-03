@@ -36,7 +36,8 @@ export const MovieProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchMovies = async () => {
       try {
         setLoading(true);
-        const res = await fetch("/api/movies?limit=500");
+        const limit = process.env.NEXT_PUBLIC_MOVIES_LIMIT || '24';
+        const res = await fetch(`/api/movies?limit=${limit}`);
 
         if (!res.ok) {
           throw new Error("Failed to fetch movies");
