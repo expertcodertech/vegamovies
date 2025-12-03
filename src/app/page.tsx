@@ -70,8 +70,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen text-white bg-[#272727]">
-      {/* Filter Section */}
-       <div className="bg-[#272727] py-2 sm:py-3">
+        {/* Filter Section */}
+        <section className="bg-[#272727] py-2 sm:py-3" aria-label="Movie filters">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
            {/* Primary Filters */}
            <div className="flex flex-wrap gap-2 sm:gap-4 justify-center mb-2">
@@ -107,10 +107,10 @@ export default function Home() {
              ))}
            </div>
          </div>
-       </div>
+        </section>
 
-      {/* Info Section */}
-       <div className="bg-[#333333] py-2">
+        {/* Info Section */}
+        <section className="bg-[#333333] py-2" aria-label="About VegaMovies">
          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center rounded p-2 bg-transparent">
            <h2 className="text-base sm:text-lg font-bold text-white mb-1 sm:mb-2">
              Vegamovies | Download Free Movies & Series
@@ -122,19 +122,19 @@ export default function Home() {
              without any hassle.
            </p>
          </div>
-       </div>
+        </section>
 
-      {/* Trending Section Title */}
-      <div className="bg-[#272727] py-2">
+        {/* Trending Section Title */}
+        <section className="bg-[#272727] py-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h3 className="text-base sm:text-lg font-bold text-white">
             Trending on Vegamovies
           </h3>
         </div>
-      </div>
+        </section>
 
-      {/* Movies Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        {/* Movies Grid */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" aria-label="Movie collection">
         {currentMovies.length === 0 ? (
           <p className="text-center text-gray-400 py-8">No movies found</p>
         ) : (
@@ -155,7 +155,7 @@ export default function Home() {
              )}
           </>
         )}
-      </div>
+        </section>
     </div>
   );
 }
